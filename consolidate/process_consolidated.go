@@ -35,12 +35,15 @@ type Distribution struct {
 }
 
 const (
-	TOTAL_AIRDROP_ATOM     = 350000000
-	TOTAL_AIRDROP_ATONE    = 231000000
-	TOTAL_AIRDROP_CONTRIBS = 119000000
+	TOTAL_AIRDROP_ATOM            = 350000000
+	TOTAL_AIRDROP_ATONE           = 231000000
+	TOTAL_AIRDROP_CONTRIBS        = 119000000
+	TOTAL_AIRDROP_NT              = 300000000
+	TOTAL_AIRDROP_GOVDAO_FOUNDERS = 7000
 
-	MULTISIG_NT_ADDRESS     = "g1sp27hn785v3kud6cg9dnhrng7wzp9cnljffhcg" //nt2
-	MULTISIG_GOVDAO_ADDRESS = "g1rp7cmetn27eqlpjpc4vuusf8kaj746tysc0qgh"
+	MULTISIG_NT1_ADDRESS    = "g1pxj9x5jkklzam9v76q7sn7grm0xnuj69qu7lmf" //nt1: nt llc + investors
+	MULTISIG_NT2_ADDRESS    = "g1sp27hn785v3kud6cg9dnhrng7wzp9cnljffhcg" //nt2: special case handling for aib accounts
+	MULTISIG_GOVDAO_ADDRESS = "g1rp7cmetn27eqlpjpc4vuusf8kaj746tysc0qgh" // govdao t1
 )
 
 var ibcEscrowAddress = map[string]bool{}
@@ -106,6 +109,26 @@ func main() {
 		Ugnot:      types.NewDec(int64(TOTAL_AIRDROP_CONTRIBS) * 1000000),
 	}
 
+	// Allocate NT budget to NT main multisig
+	totalDist[MULTISIG_NT1_ADDRESS] = Distribution{
+		Account: Account{
+			Address: MULTISIG_NT1_ADDRESS,
+		},
+		GnoAddress: MULTISIG_NT1_ADDRESS,
+		Ugnot:      types.NewDec(int64(TOTAL_AIRDROP_NT) * 1000000),
+	}
+
+	// Allocate GovDAO founders budget (1000 GNOT each)
+	for _, addr := range govdaoFounders {
+		totalDist[addr] = Distribution{
+			Account: Account{
+				Address: addr,
+			},
+			GnoAddress: addr,
+			Ugnot:      types.NewDec(int64(TOTAL_AIRDROP_GOVDAO_FOUNDERS/len(govdaoFounders)) * 1000000),
+		}
+	}
+
 	// Create gzipped file
 	outputFile, err := os.Create("genbalance.txt.gz")
 	if err != nil {
@@ -146,6 +169,16 @@ var aibCosmosAddrs = []string{
 	"cosmos1cxt79zavgr9qvqfx9hjsr9aqvpx7ftan8heqc6",
 }
 
+var govdaoFounders = []string{
+	"g1us8428u2a5satrlxzagqqa5m6vmuze025anjlj", // Jae
+	"g1manfred47kzduec920z88wfr64ylksmdcedlf5", // Manfred
+	"g12vx7dn3dqq89mz550zwunvg4qw6epq73d9csay", // Dongowon
+	"g1m0rgan0rla00ygmdmp55f5m0unvsvknluyg2a4", // Morgan
+	"g127l4gkhk0emwsx5tmxe96sp86c05h8vg5tufzq", // Maxwell
+	"g1e6gxg5tvc55mwsn7t7dymmlasratv7mkv0rap2", // Milos
+	"g1mx4pum9976th863jgry4sdjzfwu03qan5w2v9j", // Ray
+}
+
 var aibAtoneAddrs = []string{
 	"atone15hmqrc245kryaehxlch7scl9d9znxa58wka40n",
 	"atone1k8ca4pnvy8k5t22hmfzvyzl9v9d54vdvr9yyj7",
@@ -158,11 +191,11 @@ var aibAtoneAddrs = []string{
 
 func processNTMultisig(dist map[string]Distribution, prefix string, addrs []string) {
 	total := processAddrs(addrs, dist, prefix)
-	dist[MULTISIG_NT_ADDRESS] = Distribution{
+	dist[MULTISIG_NT2_ADDRESS] = Distribution{
 		Account: Account{
-			Address: MULTISIG_NT_ADDRESS,
+			Address: MULTISIG_NT2_ADDRESS,
 		},
-		GnoAddress: MULTISIG_NT_ADDRESS,
+		GnoAddress: MULTISIG_NT2_ADDRESS,
 		Ugnot:      total,
 	}
 

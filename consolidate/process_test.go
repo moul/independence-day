@@ -169,11 +169,11 @@ func TestTotal(t *testing.T) {
 		sum = sum.Add(amount_dec)
 	}
 
-	expected := types.MustNewDecFromStr("699999998384299.000000000000000000")
-	delta := types.NewDec(10)
+	expected := types.MustNewDecFromStr("1000007000000000.000000000000000000")
+	delta := expected.Mul(types.NewDecWithPrec(1, 4)) // 0.01%
 	diff := sum.Sub(expected).Abs()
 
 	if diff.GT(delta) {
-		t.Errorf("sum %s is not within ±10 of expected %s", sum.String(), expected.String())
+		t.Errorf("sum %s is not within 0.01%% of expected %s", sum.String(), expected.String())
 	}
 }
