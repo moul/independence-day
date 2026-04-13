@@ -1,5 +1,26 @@
 # independence-day
 
+> **Want to run a gnoland1 validator?** See the active deployment config:
+> **https://github.com/gnolang/gno/tree/chain/gnoland1/misc/deployments/gnoland1**
+
+---
+
+## What this repository is
+
+This repository was used to compute the initial GNOT token allocation for the **gnoland1** genesis block — the first mainnet launch of Gno.land.
+
+The work happened in two phases:
+
+1. **Snapshot & weighting** — a snapshot of Cosmos Hub (block 10562840, 2022-05-20) and AtomOne (block 6439117) was taken. Each address was assigned a weight based on liquid and delegated balances, adjusted by its vote on Cosmos Hub Proposal 69.
+2. **Balance generation** — weights were normalised against a fixed total supply (~1 billion GNOT) and written to `mkgenesis/balances.txt.gz`, which fed directly into the genesis block.
+
+The resulting genesis was used to launch **gnoland1** (chain ID `gnoland-1`). All source data, intermediate outputs, and processing scripts are preserved here for auditability — anyone can independently verify the resulting balances.
+
+Active chain configuration and validator onboarding live in the main monorepo:
+→ https://github.com/gnolang/gno/tree/chain/gnoland1/misc/deployments/gnoland1
+
+---
+
 This repository contains the scripts and data used to compute the initial GNOT token allocation for the Gno.land genesis block. The goal is to distribute GNOT in a fair and transparent way, proportional to ATOM, ATONE and PHOTON holdings and weighted by participation in Cosmos Hub governance.
 
 All source data, intermediate outputs, and processing scripts are included so anyone can independently verify the resulting balances.
